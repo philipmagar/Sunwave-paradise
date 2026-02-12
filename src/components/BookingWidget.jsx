@@ -25,8 +25,6 @@ const BookingWidget = ({ isCompact = false, onSubmit, initialData = {} }) => {
             ...prev,
             [name]: value
         }));
-
-        // Clear error for this field when user starts typing
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -37,20 +35,12 @@ const BookingWidget = ({ isCompact = false, onSubmit, initialData = {} }) => {
 
     const validateForm = () => {
         const newErrors = {};
-
-        // Validate check-in date
         const checkInError = validateFutureDate(bookingData.checkIn);
         if (checkInError) newErrors.checkIn = checkInError;
-
-        // Validate check-out date
         const checkOutError = validateCheckoutDate(bookingData.checkIn, bookingData.checkOut);
         if (checkOutError) newErrors.checkOut = checkOutError;
-
-        // Validate guests
         const guestsError = validateRequired(bookingData.guests);
         if (guestsError) newErrors.guests = guestsError;
-
-        // Validate room type
         const roomTypeError = validateRequired(bookingData.roomType);
         if (roomTypeError) newErrors.roomType = roomTypeError;
 

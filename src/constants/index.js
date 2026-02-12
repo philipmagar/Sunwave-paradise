@@ -19,8 +19,6 @@ export const INQUIRY_TYPES = {
   WEDDING: 'Wedding/Events',
   FEEDBACK: 'Feedback'
 };
-
-// Responsive Breakpoints (Tailwind defaults)
 export const BREAKPOINTS = {
   SM: '640px',
   MD: '768px',
