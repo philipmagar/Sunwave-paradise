@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
 import { hotelConfig } from '../data/hotelData';
 import { Helmet } from 'react-helmet-async';
+import Input from '../components/ui/Input';
+import Select from '../components/ui/Select';
+import Textarea from '../components/ui/Textarea';
+import Button from '../components/ui/Button';
+import { validateEmail, validateRequired, validatePhone, validateMinLength } from '../utils/validation';
+import { INQUIRY_TYPES } from '../constants';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -12,19 +18,78 @@ const Contact = () => {
         message: ''
     });
 
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
+
+        // Clear error for this field
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
     };
 
-    const handleSubmit = (e) => {
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Validate name
+        const nameError = validateRequired(formData.name) || validateMinLength(formData.name, 2);
+        if (nameError) newErrors.name = nameError;
+
+        // Validate email
+        const emailError = validateEmail(formData.email);
+        if (emailError) newErrors.email = emailError;
+
+        // Validate phone (optional but validate format if provided)
+        const phoneError = validatePhone(formData.phone);
+        if (phoneError) newErrors.phone = phoneError;
+
+        // Validate subject
+        const subjectError = validateRequired(formData.subject);
+        if (subjectError) newErrors.subject = subjectError;
+
+        // Validate message
+        const messageError = validateRequired(formData.message) || validateMinLength(formData.message, 10);
+        if (messageError) newErrors.message = messageError;
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Contact form data:', formData);
-        alert('Thank you for contacting us! We will get back to you shortly.');
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+
+        if (!validateForm()) {
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitSuccess(false);
+
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            console.log('Contact form data:', formData);
+
+            setSubmitSuccess(true);
+            setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+
+            // Hide success message after 5 seconds
+            setTimeout(() => setSubmitSuccess(false), 5000);
+        } catch (error) {
+            setErrors({ submit: 'Failed to send message. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -94,89 +159,97 @@ const Contact = () => {
                         <div className="lg:col-span-2">
                             <div className="bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-gray-100">
                                 <h2 className="text-3xl font-display font-bold mb-8">Send Us a Message</h2>
+
+                                {submitSuccess && (
+                                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg" role="alert">
+                                        <p className="text-green-600 font-semibold">Thank you for contacting us! We'll get back to you shortly.</p>
+                                    </div>
+                                )}
+
+                                {errors.submit && (
+                                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg" role="alert">
+                                        <p className="text-red-600">{errors.submit}</p>
+                                    </div>
+                                )}
+
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-                                                placeholder="John Doe"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-                                                placeholder="john@example.com"
-                                            />
-                                        </div>
+                                        <Input
+                                            type="text"
+                                            name="name"
+                                            label="Full Name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            placeholder="John Doe"
+                                            required
+                                            error={errors.name}
+                                        />
+
+                                        <Input
+                                            type="email"
+                                            name="email"
+                                            label="Email Address"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            placeholder="john@example.com"
+                                            required
+                                            error={errors.email}
+                                        />
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-                                                placeholder="+977-9800000000"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                                            <select
-                                                id="subject"
-                                                name="subject"
-                                                value={formData.subject}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none bg-white"
-                                            >
-                                                <option value="">Select a subject</option>
-                                                <option value="General Inquiry">General Inquiry</option>
-                                                <option value="Booking Question">Booking Question</option>
-                                                <option value="Wedding/Events">Wedding/Events</option>
-                                                <option value="Feedback">Feedback</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                        <Input
+                                            type="tel"
+                                            name="phone"
+                                            label="Phone Number"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            placeholder="+977-9800000000"
+                                            error={errors.phone}
+                                            helperText="Optional"
+                                        />
 
-                                    <div>
-                                        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
-                                        <textarea
-                                            id="message"
-                                            name="message"
-                                            rows="5"
-                                            value={formData.message}
+                                        <Select
+                                            name="subject"
+                                            label="Subject"
+                                            value={formData.subject}
                                             onChange={handleChange}
                                             required
-                                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
-                                            placeholder="How can we help you?"
-                                        ></textarea>
+                                            error={errors.subject}
+                                        >
+                                            <option value="">Select a subject</option>
+                                            {Object.values(INQUIRY_TYPES).map(type => (
+                                                <option key={type} value={type}>{type}</option>
+                                            ))}
+                                        </Select>
                                     </div>
 
-                                    <button
+                                    <Textarea
+                                        name="message"
+                                        label="Your Message"
+                                        rows="5"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        placeholder="How can we help you?"
+                                        required
+                                        error={errors.message}
+                                    />
+
+                                    <Button
                                         type="submit"
-                                        className="w-full btn-primary flex items-center justify-center gap-2 text-lg py-4"
+                                        variant="primary"
+                                        size="lg"
+                                        className="w-full flex items-center justify-center gap-2"
+                                        loading={isSubmitting}
+                                        disabled={isSubmitting}
                                     >
-                                        <span>Send Message</span>
-                                        <FaPaperPlane className="text-sm" />
-                                    </button>
+                                        {!isSubmitting && (
+                                            <>
+                                                <span>Send Message</span>
+                                                <FaPaperPlane className="text-sm" />
+                                            </>
+                                        )}
+                                    </Button>
                                 </form>
                             </div>
                         </div>
@@ -208,3 +281,4 @@ const Contact = () => {
 };
 
 export default Contact;
+

@@ -31,6 +31,7 @@ const Header = () => {
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-sm'
                 }`}
+            role="banner"
         >
             {/* Top Bar */}
             <div className="bg-primary-600 text-white py-2 hidden md:block">
@@ -57,7 +58,7 @@ const Header = () => {
             </div>
 
             {/* Main Navigation */}
-            <nav className="container-custom py-4">
+            <nav className="container-custom py-4" role="navigation" aria-label="Main navigation">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
                     <Link to="/" className="flex items-center">
@@ -67,22 +68,25 @@ const Header = () => {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center gap-8">
+                    <ul className="hidden lg:flex items-center gap-8" role="menubar">
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.path}
-                                to={link.path}
-                                className={`font-medium transition-colors relative group ${isActive(link.path)
+                            <li key={link.path} role="none">
+                                <Link
+                                    to={link.path}
+                                    role="menuitem"
+                                    aria-current={isActive(link.path) ? 'page' : undefined}
+                                    className={`font-medium transition-colors relative group ${isActive(link.path)
                                         ? 'text-primary-600'
                                         : 'text-gray-700 hover:text-primary-600'
-                                    }`}
-                            >
-                                {link.name}
-                                <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-primary-600 transform transition-transform ${isActive(link.path) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                                    }`}></span>
-                            </Link>
+                                        }`}
+                                >
+                                    {link.name}
+                                    <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-primary-600 transform transition-transform ${isActive(link.path) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                                        }`}></span>
+                                </Link>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
 
                     {/* CTA Buttons */}
                     <div className="hidden lg:flex items-center gap-4">
@@ -104,7 +108,9 @@ const Header = () => {
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="lg:hidden text-2xl text-gray-700 hover:text-primary-600 transition"
-                        aria-label="Toggle menu"
+                        aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={isMobileMenuOpen}
+                        aria-controls="mobile-menu"
                     >
                         {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
                     </button>
@@ -112,7 +118,12 @@ const Header = () => {
 
                 {/* Mobile Menu */}
                 {isMobileMenuOpen && (
-                    <div className="lg:hidden mt-4 pb-4 animate-slide-up">
+                    <div
+                        id="mobile-menu"
+                        className="lg:hidden mt-4 pb-4 animate-slide-up"
+                        role="menu"
+                        aria-label="Mobile navigation"
+                    >
                         <div className="flex flex-col gap-4">
                             {navLinks.map((link) => (
                                 <Link
@@ -120,8 +131,8 @@ const Header = () => {
                                     to={link.path}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className={`font-medium py-2 px-4 rounded transition-colors ${isActive(link.path)
-                                            ? 'bg-primary-600 text-white'
-                                            : 'text-gray-700 hover:bg-primary-50'
+                                        ? 'bg-primary-600 text-white'
+                                        : 'text-gray-700 hover:bg-primary-50'
                                         }`}
                                 >
                                     {link.name}

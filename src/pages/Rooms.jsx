@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { FaUsers, FaRulerCombined, FaCheckCircle } from 'react-icons/fa';
+import { FaUsers, FaRulerCombined, FaCheckCircle, FaBed } from 'react-icons/fa';
 import { roomTypes, hotelConfig } from '../data/hotelData';
 import { Helmet } from 'react-helmet-async';
+import EmptyState from '../components/EmptyState';
 
 const Rooms = () => {
     return (
@@ -25,96 +26,106 @@ const Rooms = () => {
             {/* Rooms Grid */}
             <section className="section-padding bg-gray-50">
                 <div className="container-custom">
-                    <div className="space-y-12">
-                        {roomTypes.map((room, index) => (
-                            <div
-                                key={room.id}
-                                className={`bg-white rounded-lg overflow-hidden shadow-xl card-hover ${index % 2 === 0 ? '' : ''
-                                    }`}
-                            >
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                                    {/* Image */}
-                                    <div className={`relative h-64 lg:h-full min-h-[400px] overflow-hidden ${index % 2 === 0 ? 'lg:order-1' : 'lg:order-2'}`}>
-                                        <img
-                                            src={`https://images.unsplash.com/photo-${index === 0 ? '1631049307264-da0ec9d70304' : index === 1 ? '1590490360182-c33d57733427' : index === 2 ? '1566665797739-1674de7a421a' : '1582719478250-c89cae4df85b'}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80`}
-                                            alt={room.name}
-                                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                                            loading="lazy"
-                                        />
-                                        <div className="absolute top-4 right-4 bg-primary-600 text-white px-4 py-2 rounded-lg shadow-lg">
-                                            <span className="text-2xl font-bold">{room.currency} {room.price}</span>
-                                            <span className="text-sm">/night</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className={`p-8 lg:p-12 ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
-                                        <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
-                                            {room.name}
-                                        </h2>
-                                        <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                                            {room.description}
-                                        </p>
-
-                                        {/* Room Info */}
-                                        <div className="grid grid-cols-2 gap-4 mb-6">
-                                            <div className="flex items-center gap-3">
-                                                <FaUsers className="text-primary-600 text-xl" />
-                                                <div>
-                                                    <p className="text-sm text-gray-600">Max Guests</p>
-                                                    <p className="font-semibold">{room.maxGuests} Guests</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <FaRulerCombined className="text-primary-600 text-xl" />
-                                                <div>
-                                                    <p className="text-sm text-gray-600">Room Size</p>
-                                                    <p className="font-semibold">{room.size}</p>
-                                                </div>
+                    {roomTypes.length === 0 ? (
+                        <EmptyState
+                            icon={FaBed}
+                            title="No Rooms Available"
+                            description="We're currently updating our room inventory. Please check back later or contact us directly for availability."
+                            actionLabel="Contact Us"
+                            actionLink="/contact"
+                        />
+                    ) : (
+                        <div className="space-y-12">
+                            {roomTypes.map((room, index) => (
+                                <div
+                                    key={room.id}
+                                    className={`bg-white rounded-lg overflow-hidden shadow-xl card-hover ${index % 2 === 0 ? '' : ''
+                                        }`}
+                                >
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                                        {/* Image */}
+                                        <div className={`relative h-64 lg:h-full min-h-[400px] overflow-hidden ${index % 2 === 0 ? 'lg:order-1' : 'lg:order-2'}`}>
+                                            <img
+                                                src={`https://images.unsplash.com/photo-${index === 0 ? '1631049307264-da0ec9d70304' : index === 1 ? '1590490360182-c33d57733427' : index === 2 ? '1566665797739-1674de7a421a' : '1582719478250-c89cae4df85b'}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80`}
+                                                alt={room.name}
+                                                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                                                loading="lazy"
+                                            />
+                                            <div className="absolute top-4 right-4 bg-primary-600 text-white px-4 py-2 rounded-lg shadow-lg">
+                                                <span className="text-2xl font-bold">{room.currency} {room.price}</span>
+                                                <span className="text-sm">/night</span>
                                             </div>
                                         </div>
 
-                                        {/* Features */}
-                                        <div className="mb-8">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Room Features</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                                {room.features.map((feature, idx) => (
-                                                    <div key={idx} className="flex items-center gap-2">
-                                                        <FaCheckCircle className="text-green-500 flex-shrink-0" />
-                                                        <span className="text-gray-700">{feature}</span>
+                                        {/* Content */}
+                                        <div className={`p-8 lg:p-12 ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
+                                            <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+                                                {room.name}
+                                            </h2>
+                                            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                                                {room.description}
+                                            </p>
+
+                                            {/* Room Info */}
+                                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                                <div className="flex items-center gap-3">
+                                                    <FaUsers className="text-primary-600 text-xl" />
+                                                    <div>
+                                                        <p className="text-sm text-gray-600">Max Guests</p>
+                                                        <p className="font-semibold">{room.maxGuests} Guests</p>
                                                     </div>
-                                                ))}
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <FaRulerCombined className="text-primary-600 text-xl" />
+                                                    <div>
+                                                        <p className="text-sm text-gray-600">Room Size</p>
+                                                        <p className="font-semibold">{room.size}</p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {/* CTA Buttons */}
-                                        <div className="flex flex-col sm:flex-row gap-4">
-                                            <Link
-                                                to="/booking"
-                                                state={{ roomType: room.slug }}
-                                                className="btn-primary text-center"
-                                            >
-                                                Book This Room
-                                            </Link>
-                                            <a
-                                                href={`https://wa.me/${hotelConfig.whatsapp.replace(/[^0-9]/g, '')}?text=I'm interested in booking ${room.name}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="btn-whatsapp justify-center"
-                                            >
-                                                WhatsApp Inquiry
-                                            </a>
+                                            {/* Features */}
+                                            <div className="mb-8">
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-3">Room Features</h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                                    {room.features.map((feature, idx) => (
+                                                        <div key={idx} className="flex items-center gap-2">
+                                                            <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                                                            <span className="text-gray-700">{feature}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* CTA Buttons */}
+                                            <div className="flex flex-col sm:flex-row gap-4">
+                                                <Link
+                                                    to="/booking"
+                                                    state={{ roomType: room.slug }}
+                                                    className="btn-primary text-center"
+                                                >
+                                                    Book This Room
+                                                </Link>
+                                                <a
+                                                    href={`https://wa.me/${hotelConfig.whatsapp.replace(/[^0-9]/g, '')}?text=I'm interested in booking ${room.name}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn-whatsapp justify-center"
+                                                >
+                                                    WhatsApp Inquiry
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
-            </section>
+            </section >
 
             {/* CTA Section */}
-            <section className="section-padding bg-primary-600 text-white">
+            < section className="section-padding bg-primary-600 text-white" >
                 <div className="container-custom text-center">
                     <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
                         Can't Decide? Let Us Help!
@@ -134,9 +145,10 @@ const Rooms = () => {
                         </Link>
                     </div>
                 </div>
-            </section>
+            </section >
         </>
     );
 };
+
 
 export default Rooms;

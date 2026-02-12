@@ -1,17 +1,22 @@
 import { Link } from 'react-router-dom';
 import { FaStar, FaWhatsapp, FaArrowRight } from 'react-icons/fa';
 import BookingWidget from '../components/BookingWidget';
+import SEO from '../components/SEO';
 import { roomTypes, amenities, testimonials, hotelConfig } from '../data/hotelData';
-import { Helmet } from 'react-helmet-async';
+import { getHotelStructuredData } from '../utils/structuredData';
 
 const Home = () => {
+    const structuredData = getHotelStructuredData();
+
     return (
         <>
-            <Helmet>
-                <title>{hotelConfig.name} - {hotelConfig.tagline}</title>
-                <meta name="description" content={`Book your stay at ${hotelConfig.name} in Kathmandu. Luxury rooms, world-class amenities, and exceptional service. ${hotelConfig.tagline}`} />
-                <meta name="keywords" content="hotel kathmandu, luxury hotel nepal, hotel booking kathmandu, best hotel thamel" />
-            </Helmet>
+            <SEO
+                title={`${hotelConfig.name} - ${hotelConfig.tagline}`}
+                description={`Book your stay at ${hotelConfig.name} in Kathmandu. Luxury rooms, world-class amenities, and exceptional service. ${hotelConfig.tagline}`}
+                keywords="hotel kathmandu, luxury hotel nepal, hotel booking kathmandu, best hotel thamel, sunwave paradise"
+                url="/"
+                structuredData={structuredData}
+            />
 
             {/* Hero Section */}
             <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -199,43 +204,6 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Testimonials */}
-            <section className="section-padding bg-primary-600 text-white">
-                <div className="container-custom">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-                            What Our Guests Say
-                        </h2>
-                        <p className="text-lg text-primary-100 max-w-2xl mx-auto">
-                            Read reviews from our satisfied guests
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {testimonials.map((testimonial) => (
-                            <div
-                                key={testimonial.id}
-                                className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
-                            >
-                                <div className="flex gap-1 mb-4">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
-                                        <FaStar key={i} className="text-yellow-400" />
-                                    ))}
-                                </div>
-                                <p className="text-white/90 mb-4 italic">
-                                    "{testimonial.comment}"
-                                </p>
-                                <div className="border-t border-white/20 pt-4">
-                                    <p className="font-semibold">{testimonial.name}</p>
-                                    <p className="text-sm text-primary-100">{testimonial.location}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* CTA Section */}
             <section className="section-padding bg-gray-900 text-white">
                 <div className="container-custom text-center">
